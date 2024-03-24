@@ -4,6 +4,7 @@ import torch.nn.functional as F
 
 from torch import nn
 from typing import Optional
+from bitnet import BitLinear
 
 
 class BasicTransformerBlock(nn.Module):
@@ -29,9 +30,9 @@ class BasicTransformerBlock(nn.Module):
             # self.layernorm = nn.LayerNorm(config.time_channels, eps=1e-12)
             self.dropout = nn.Dropout(dropout)
             self.time_trans = nn.Sequential(
-                nn.Linear(config.time_channels, config.time_channels * 4),
+                BitLinear(config.time_channels, config.time_channels * 4),
                 nn.SiLU(),
-                nn.Linear(config.time_channels * 4, num_attention_heads * attention_head_dim),
+                BitLinear(config.time_channels * 4, num_attention_heads * attention_head_dim),
             )
 
             # self.time_net = nn.Linear(self.dim, num_attention_heads * attention_head_dim, bias=attention_bias)
@@ -133,14 +134,14 @@ class CrossAttention(nn.Module):
         self.heads = heads
         self.dim_head = dim_head
 
-        self.to_q = nn.Linear(query_dim, self.inner_dim, bias=bias)
-        self.to_k = nn.Linear(cross_attention_dim, self.inner_dim, bias=bias)
-        self.to_v = nn.Linear(cross_attention_dim, self.inner_dim, bias=bias)
+        self.to_q = BitLinear(query_dim, self.inner_dim, bias=bias)
+        self.to_k = BitLinear(cross_attention_dim, self.inner_dim, bias=bias)
+        self.to_v = BitLinear(cross_attention_dim, self.inner_dim, bias=bias)
         
         self.dropatt = nn.Dropout(attention_dropout)
 
         self.to_out = nn.ModuleList([])
-        self.to_out.append(nn.Linear(self.inner_dim, query_dim))
+        self.to_out.append(BitLinear(self.inner_dim, query_dim))
         self.to_out.append(nn.Dropout(dropout))
 
     def reshape_heads_to_batch_dim(self, tensor, time_embeddings=None):
