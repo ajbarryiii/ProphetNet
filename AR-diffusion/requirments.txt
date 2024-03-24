@@ -15,3 +15,4 @@ future
 sacremoses
 editdistance
 numba
+bitnet
