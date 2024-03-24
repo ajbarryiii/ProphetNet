@@ -104,7 +104,7 @@ class TrainLoop:
                 output_device=dist.get_rank(), find_unused_parameters=False,
             )
         else:
-            print("single GPU is not achieve now")
+            print("single GPU is not active now")
             exit(0)
 
         if config.fix_encoder:
