@@ -174,7 +174,7 @@ class TrainLoop:
                         global_step=self.global_step
                     )
                     
-                # ema schedule. It actually save a shadow model for evalution.
+                # ema schedule. It actually saves a shadow model for evalution.
                 # It doesn't change the training process.
                 for rate, params in zip(self.ema_rate, self.ema_params):
                     self.update_ema(params, self.master_params, rate=rate)
